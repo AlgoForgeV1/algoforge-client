@@ -1,17 +1,40 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { useState } from "react";
 
 import Logo from "./Logo";
 import Navigation from "./Navigation";
 import NavbarActions from "./NavbarActions";
 
 export default function Navbar() {
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    const diff = latest - previous;
+
+    if (latest < 80) {
+      setHidden(false);
+      return;
+    }
+
+    if (diff > 4) {
+      setHidden(true); 
+    } else if (diff < -4) {
+      setHidden(false); 
+    }
+  });
+
   return (
     <header className="fixed inset-x-0 top-6 z-50 px-6">
       <motion.nav
         initial={{ opacity: 0, y: -25 }}
-        animate={{ opacity: 1, y: 0 }}
+        animate={{
+          opacity: hidden ? 0 : 1,
+          y: hidden ? -100 : 0,
+        }}
         transition={{
           duration: 0.45,
           ease: [0.22, 1, 0.36, 1],
@@ -47,9 +70,7 @@ export default function Navbar() {
           duration-300
           overflow-hidden
           "
-          >
-        {/* Ambient glow */}
-
+      >
         <div
           className="
           absolute
@@ -64,9 +85,7 @@ export default function Navbar() {
         />
 
         <Logo />
-
         <Navigation />
-
         <NavbarActions />
       </motion.nav>
     </header>

@@ -6,26 +6,80 @@ import { motion, easeInOut } from "framer-motion";
 import Shadow from "./parts/Shadow";
 import Defs from "./parts/Defs";
 
+const SvgForgey = (
+  props: SVGProps<SVGSVGElement> & {
+    activeFeature?: number | null;
+  }
+) => {
+  const { activeFeature = null, ...svgProps } = props;
 
-const SvgForgey = (props: SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 800 800"
-    width="100%"
-    height="100%"
-    {...props}
-  >
-    <defs>
-      <Defs />
-    </defs>
+  const pose = {
+    eyeX: 0,
+    eyeY: 0,
+    hammerRotate: 0,
+    hammerY: 0,
+  };
+
+  switch (activeFeature) {
+    case 0:
+      pose.eyeX = -6;
+      pose.eyeY = -4;
+      pose.hammerRotate = -18;
+      pose.hammerY = -10;
+      break;
+
+    case 1:
+      pose.eyeX = 6;
+      pose.eyeY = -4;
+      pose.hammerRotate = 18;
+      pose.hammerY = -10;
+      break;
+
+    case 2:
+      pose.eyeX = -8;
+      pose.eyeY = 2;
+      pose.hammerRotate = -30;
+      pose.hammerY = -14;
+      break;
+
+    case 3:
+      pose.eyeX = 8;
+      pose.eyeY = 2;
+      pose.hammerRotate = 30;
+      pose.hammerY = -14;
+      break;
+
+    case 4:
+      pose.eyeX = -5;
+      pose.eyeY = 6;
+      pose.hammerRotate = -14;
+      pose.hammerY = 6;
+      break;
+
+    case 5:
+      pose.eyeX = 5;
+      pose.eyeY = 6;
+      pose.hammerRotate = 14;
+      pose.hammerY = 6;
+      break;
+  }
+
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 800 800"
+      width="100%"
+      height="100%"
+      {...svgProps}
+    >
+      <defs>
+        <Defs />
+      </defs>
 
   
     {/* Shadow */}
 
     <Shadow />
-
-    {/* Hammer */}
-
     
 
   
@@ -131,14 +185,31 @@ const SvgForgey = (props: SVGProps<SVGSVGElement>) => (
       <motion.g
         id="left-eye"
         animate={{
-          scaleY: [1, 1, 0.08, 1],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          times: [0, 0.82, 0.87, 1],
-          ease: easeInOut,
-        }}
+  x: pose.eyeX,
+  y: pose.eyeY,
+  scaleY:
+    activeFeature === null
+      ? [1, 1, 0.08, 1]
+      : 1,
+}}
+transition={{
+  x: {
+    type: "spring",
+    stiffness: 220,
+    damping: 18,
+  },
+  y: {
+    type: "spring",
+    stiffness: 220,
+    damping: 18,
+  },
+  scaleY: {
+    duration: 4,
+    repeat: activeFeature === null ? Infinity : 0,
+    times: [0, 0.82, 0.87, 1],
+    ease: easeInOut,
+  },
+}}
         style={{
           transformOrigin: "335px 420px",
         }}
@@ -154,14 +225,31 @@ const SvgForgey = (props: SVGProps<SVGSVGElement>) => (
       <motion.g
         id="right-eye"
         animate={{
-          scaleY: [1, 1, 0.08, 1],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          times: [0, 0.82, 0.87, 1],
-          ease: easeInOut,
-        }}
+  x: pose.eyeX,
+  y: pose.eyeY,
+  scaleY:
+    activeFeature === null
+      ? [1, 1, 0.08, 1]
+      : 1,
+}}
+transition={{
+  x: {
+    type: "spring",
+    stiffness: 220,
+    damping: 18,
+  },
+  y: {
+    type: "spring",
+    stiffness: 220,
+    damping: 18,
+  },
+  scaleY: {
+    duration: 4,
+    repeat: activeFeature === null ? Infinity : 0,
+    times: [0, 0.82, 0.87, 1],
+    ease: easeInOut,
+  },
+}}
         style={{
           transformOrigin: "445px 420px",
         }}
@@ -318,14 +406,21 @@ const SvgForgey = (props: SVGProps<SVGSVGElement>) => (
     <motion.g
       id="layer-sparks"
       animate={{
-        opacity: [0, 1, 0],
-        scale: [0.6, 1.4, 0.6],
-      }}
+  opacity:
+    activeFeature === null
+      ? [0, 1, 0]
+      : [0, 0, 1, 0],
+
+  scale:
+    activeFeature === null
+      ? [0.6, 1.4, 0.6]
+      : [0.3, 0.3, 1.8, 0.5],
+}}
       transition={{
-        duration: 2.2,
-        repeat: Infinity,
-        ease: easeInOut,
-      }}
+  duration: activeFeature === null ? 2.2 : 0.55,
+  repeat: activeFeature === null ? Infinity : 0,
+  ease: easeInOut,
+}}
       style={{
         transformOrigin: "560px 260px",
       }}
@@ -374,14 +469,31 @@ const SvgForgey = (props: SVGProps<SVGSVGElement>) => (
 <motion.g
   id="layer-hammer"
   animate={{
-    rotate: [-2, 2, -2],
-    y: [0, -2, 0],
-  }}
+  rotate:
+    activeFeature === null
+      ? [-2, 2, -2]
+      : [
+          0,
+          pose.hammerRotate - 15,
+          pose.hammerRotate + 30,
+          pose.hammerRotate,
+        ],
+
+  y:
+    activeFeature === null
+      ? [0, -2, 0]
+      : [
+          0,
+          pose.hammerY - 18,
+          pose.hammerY + 6,
+          pose.hammerY,
+        ],
+}}
   transition={{
-    duration: 3,
-    repeat: Infinity,
-    ease: easeInOut,
-  }}
+  duration: activeFeature === null ? 3 : 0.55,
+  repeat: activeFeature === null ? Infinity : 0,
+  ease: easeInOut,
+}}
   style={{
     transformOrigin: "610px 520px",
   }}
@@ -431,6 +543,37 @@ const SvgForgey = (props: SVGProps<SVGSVGElement>) => (
     opacity={0.45}
     transform="rotate(25 604 435)"
   />
+
+  <motion.circle
+  cx={585}
+  cy={345}
+  r={8}
+  fill="none"
+  stroke="#FB923C"
+  strokeWidth={5}
+  opacity={0}
+  animate={{
+    opacity:
+      activeFeature === null
+        ? 0
+        : [0, 0, 1, 0],
+
+    r:
+      activeFeature === null
+        ? 8
+        : [8, 8, 42, 55],
+
+    strokeWidth:
+      activeFeature === null
+        ? 5
+        : [5, 5, 2, 0],
+  }}
+  transition={{
+    duration: 0.55,
+    times: [0, 0.55, 0.75, 1],
+    ease: easeInOut,
+  }}
+/>
 </motion.g>
 {/* ====================== RIGHT HAND ====================== */}
 
@@ -469,6 +612,7 @@ const SvgForgey = (props: SVGProps<SVGSVGElement>) => (
 
 
   </svg>
-);
+  );
+};
 
 export default SvgForgey;

@@ -1,10 +1,21 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { useEffect } from "react";
 import SvgForgey from "./svg/ForgeySVG";
 
-export default function Forgey() {
+interface ForgeyProps {
+  activeFeature?: number | null;
+}
+
+export default function Forgey({
+  activeFeature = null,
+}: ForgeyProps) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -79,6 +90,7 @@ export default function Forgey() {
           }}
         >
           <SvgForgey
+            activeFeature={activeFeature}
             className="
               w-[340px]
               h-[340px]
