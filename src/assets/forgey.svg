@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <!-- Shadow Gradient -->
+    <radialGradient id="dropShadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1A0B00" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#1A0B00" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Molten Slime Body Gradient -->
+    <linearGradient id="slimeBodyGrad" x1="30%" y1="10%" x2="70%" y2="90%">
+      <stop offset="0%" stop-color="#FFAB40" />
+      <stop offset="45%" stop-color="#FF6D00" />
+      <stop offset="85%" stop-color="#DD2C00" />
+      <stop offset="100%" stop-color="#9A0000" />
+    </linearGradient>
+
+    <!-- Internal Core Glow -->
+    <radialGradient id="coreGlow" cx="50%" cy="65%" r="45%">
+      <stop offset="0%" stop-color="#FFE082" stop-opacity="0.7" />
+      <stop offset="60%" stop-color="#FF6D00" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#DD2C00" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Slime Highlight Specular Gradient -->
+    <linearGradient id="glossHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" />
+    </linearGradient>
+
+    <!-- Goggle Brass Frame Gradient -->
+    <linearGradient id="goggleFrame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8D6E63" />
+      <stop offset="50%" stop-color="#4E342E" />
+      <stop offset="100%" stop-color="#3E2723" />
+    </linearGradient>
+
+    <!-- Goggle Lens Gradient -->
+    <linearGradient id="goggleLens" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#80DEEA" />
+      <stop offset="100%" stop-color="#00838F" />
+    </linearGradient>
+
+    <!-- Hammer Metal Head Gradient -->
+    <linearGradient id="hammerHead" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#607D8B" />
+      <stop offset="50%" stop-color="#37474F" />
+      <stop offset="100%" stop-color="#212121" />
+    </linearGradient>
+
+    <!-- Hammer Heated Face Glow -->
+    <radialGradient id="hammerHeat" cx="80%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFAB40" />
+      <stop offset="50%" stop-color="#FF3D00" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#37474F" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Wood Handle Gradient -->
+    <linearGradient id="woodHandle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A1887F" />
+      <stop offset="50%" stop-color="#6D4C41" />
+      <stop offset="100%" stop-color="#4E342E" />
+    </linearGradient>
+
+    <!-- Soft Glow Filter -->
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- LAYER 1: GROUND SHADOW -->
+  <g id="layer-shadow">
+    <ellipse cx="400" cy="680" rx="210" ry="38" fill="url(#dropShadow)" />
+  </g>
+
+  <!-- LAYER 2: BACK HAND & HAMMER -->
+  <g id="layer-hammer" transform="rotate(-12 550 480)">
+    <!-- Wood Handle -->
+    <rect x="520" y="380" width="28" height="230" rx="14" fill="url(#woodHandle)" />
+    <!-- Handle Grip Wraps -->
+    <path d="M 520 530 L 548 540 M 520 550 L 548 560 M 520 570 L 548 580" stroke="#3E2723" stroke-width="3" stroke-linecap="round" opacity="0.6" />
+
+    <!-- Hammer Head Group -->
+    <g id="hammer-head">
+      <!-- Base Head Block -->
+      <rect x="460" y="330" width="140" height="80" rx="16" fill="url(#hammerHead)" />
+      <!-- Heated Bevel Tip -->
+      <path d="M 580 330 L 610 342 C 618 346 622 355 622 370 C 622 385 618 394 610 398 L 580 410 Z" fill="url(#hammerHead)" />
+      <!-- Heated Face Inner Glow -->
+      <path d="M 580 330 L 610 342 C 618 346 622 355 622 370 C 622 385 618 394 610 398 L 580 410 Z" fill="url(#hammerHeat)" />
+      <!-- Top Metallic Highlight -->
+      <rect x="470" y="336" width="100" height="6" rx="3" fill="#ECEFF1" opacity="0.4" />
+    </g>
+
+    <!-- Right Hand (Gripping Hammer) -->
+    <g id="right-hand">
+      <path d="M 510 480 C 490 470 475 490 485 510 C 495 525 520 525 530 510 C 538 495 525 480 510 480 Z" fill="#FF6D00" />
+      <ellipse cx="500" cy="492" rx="8" ry="5" fill="#FFAB40" opacity="0.6" transform="rotate(-20 500 492)" />
+    </g>
+  </g>
+
+  <!-- LAYER 3: MAIN SLIME BODY -->
+  <g id="layer-slime-body">
+    <!-- Main Outer Blob -->
+    <path id="body-shape" d="M 400 220 
+             C 520 220 610 290 620 410 
+             C 630 530 570 650 440 660 
+             C 320 670 190 650 180 520 
+             C 170 390 280 220 400 220 Z" 
+          fill="url(#slimeBodyGrad)" />
+
+    <!-- Internal Core Heat Glow -->
+    <path id="body-core-glow" d="M 400 280 
+             C 490 280 550 340 560 440 
+             C 570 540 510 620 410 630 
+             C 310 640 220 610 220 500 
+             C 220 390 310 280 400 280 Z" 
+          fill="url(#coreGlow)" />
+
+    <!-- Molten Drip/Nodule (Left side curve element for character fluidity) -->
+    <path d="M 210 500 C 170 510 150 560 180 590 C 210 610 240 580 230 540 Z" fill="#E65100" />
+  </g>
+
+  <!-- LAYER 4: LEFT HAND (FREE / EXPRESSIVE) -->
+  <g id="layer-left-hand">
+    <path d="M 200 470 C 160 460 130 500 150 530 C 170 550 200 540 215 510 C 225 490 215 475 200 470 Z" fill="#FF6D00" />
+    <ellipse cx="175" cy="490" rx="10" ry="5" fill="#FFAB40" opacity="0.7" transform="rotate(-30 175 490)" />
+  </g>
+
+  <!-- LAYER 5: FACE (EYES, MOUTH, BLUSH) -->
+  <g id="layer-face">
+    <!-- Blush Spots -->
+    <ellipse cx="300" cy="465" rx="24" ry="14" fill="#FF3D00" opacity="0.35" />
+    <ellipse cx="480" cy="465" rx="24" ry="14" fill="#FF3D00" opacity="0.35" />
+
+    <!-- LEFT EYE -->
+    <g id="left-eye">
+      <ellipse cx="335" cy="420" rx="38" ry="46" fill="#1A0B00" />
+      <!-- Pupil Highlights -->
+      <circle cx="322" cy="402" r="16" fill="#FFFFFF" />
+      <circle cx="348" cy="440" r="7" fill="#FFFFFF" />
+      <circle cx="320" cy="432" r="4" fill="#FFFFFF" opacity="0.8" />
+    </g>
+
+    <!-- RIGHT EYE -->
+    <g id="right-eye">
+      <ellipse cx="445" cy="420" rx="38" ry="46" fill="#1A0B00" />
+      <!-- Pupil Highlights -->
+      <circle cx="432" cy="402" r="16" fill="#FFFFFF" />
+      <circle cx="458" cy="440" r="7" fill="#FFFFFF" />
+      <circle cx="430" cy="432" r="4" fill="#FFFFFF" opacity="0.8" />
+    </g>
+
+    <!-- WARM SMILE -->
+    <path id="mouth" d="M 360 465 Q 390 495 420 465" fill="none" stroke="#1A0B00" stroke-width="9" stroke-linecap="round" />
+    <!-- Tongue / Lip Accent -->
+    <path d="M 372 477 Q 390 492 408 477" fill="#FF3D00" opacity="0.8" />
+  </g>
+
+  <!-- LAYER 6: BLACKSMITH GOGGLES (RESTING ON HEAD) -->
+  <g id="layer-goggles" transform="translate(0, -20)">
+    <!-- Leather Strap -->
+    <path d="M 215 285 C 270 250 510 250 565 285" fill="none" stroke="#3E2723" stroke-width="18" stroke-linecap="round" />
+    <path d="M 215 285 C 270 250 510 250 565 285" fill="none" stroke="#4E342E" stroke-width="10" stroke-linecap="round" />
+
+    <!-- Center Bridge -->
+    <rect x="373" y="260" width="34" height="14" rx="7" fill="#212121" />
+
+    <!-- LEFT GOGGLE FRAME & LENS -->
+    <g id="goggle-left">
+      <circle cx="325" cy="268" r="48" fill="url(#goggleFrame)" />
+      <circle cx="325" cy="268" r="38" fill="url(#goggleLens)" />
+      <!-- Inner Rim Accent -->
+      <circle cx="325" cy="268" r="45" fill="none" stroke="#D7CCC8" stroke-width="2" opacity="0.4" />
+      <!-- Glass Glint -->
+      <path d="M 300 250 Q 325 238 345 248 Q 320 258 300 250 Z" fill="#FFFFFF" opacity="0.6" />
+    </g>
+
+    <!-- RIGHT GOGGLE FRAME & LENS -->
+    <g id="goggle-right">
+      <circle cx="455" cy="268" r="48" fill="url(#goggleFrame)" />
+      <circle cx="455" cy="268" r="38" fill="url(#goggleLens)" />
+      <!-- Inner Rim Accent -->
+      <circle cx="455" cy="268" r="45" fill="none" stroke="#D7CCC8" stroke-width="2" opacity="0.4" />
+      <!-- Glass Glint -->
+      <path d="M 430 250 Q 455 238 475 248 Q 450 258 430 250 Z" fill="#FFFFFF" opacity="0.6" />
+    </g>
+  </g>
+
+  <!-- LAYER 7: GLOSS & HIGHLIGHTS -->
+  <g id="layer-highlights" pointer-events="none">
+    <!-- Major Head Specular Reflection -->
+    <path d="M 280 260 C 320 235 400 230 430 235 C 380 245 310 260 280 260 Z" fill="url(#glossHighlight)" />
+    
+    <!-- Top-Left Curved Main Surface Shine -->
+    <path d="M 230 330 C 210 400 215 470 235 520 C 220 470 220 390 245 340 C 255 320 270 300 290 285 C 265 295 242 310 230 330 Z" fill="#FFFFFF" opacity="0.4" />
+
+    <!-- Bottom Bounce Light Accent -->
+    <path d="M 280 635 C 350 655 450 650 510 620 C 450 640 360 642 280 635 Z" fill="#FFE082" opacity="0.5" />
+  </g>
+
+  <!-- LAYER 8: AMBIENT FORGE SPARKS -->
+  <g id="layer-sparks">
+    <circle cx="600" cy="260" r="6" fill="#FFE082" filter="url(#softGlow)" />
+    <circle cx="640" cy="300" r="4" fill="#FF7043" filter="url(#softGlow)" />
+    <circle cx="560" cy="210" r="3" fill="#FFCA28" />
+    <circle cx="210" cy="360" r="4" fill="#FFE082" filter="url(#softGlow)" />
+    <circle cx="170" cy="320" r="3" fill="#FF7043" />
+  </g>
+</svg>
