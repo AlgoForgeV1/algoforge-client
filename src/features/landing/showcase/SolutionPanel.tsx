@@ -1,19 +1,31 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { CheckCircle2, Clock3, Code2 } from "lucide-react";
 import { solution } from "./data";
+
+const container: Variants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.035, delayChildren: 0.05 },
+  },
+};
+
+const line: Variants = {
+  hidden: { opacity: 0, y: 4 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.2 } },
+};
 
 export default function SolutionPanel() {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -25 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.4 }}
       className="
         overflow-hidden
-        rounded-3xl
+        rounded-2xl
         border
         border-neutral-200
         bg-white/70
@@ -24,172 +36,68 @@ export default function SolutionPanel() {
       "
     >
       {/* Header */}
-
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-          border-b
-          border-neutral-200
-          px-6
-          py-5
-
-          dark:border-white/10
-        "
-      >
+      <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3 dark:border-white/10">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-orange-500">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-orange-500">
             Solution
           </p>
-
-          <h4 className="mt-2 text-lg font-semibold text-neutral-900 dark:text-white">
+          <h4 className="mt-0.5 text-sm font-semibold text-neutral-900 dark:text-white">
             Two Sum
           </h4>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-              rounded-full
-              bg-neutral-100
-              px-3
-              py-2
-              text-xs
-              font-medium
-              text-neutral-700
-
-              dark:bg-white/5
-              dark:text-neutral-300
-            "
-          >
-            <Code2 size={14} />
+        <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-medium text-neutral-700 dark:bg-white/5 dark:text-neutral-300">
+            <Code2 size={12} />
             Java
           </div>
-
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-              rounded-full
-              bg-emerald-500/10
-              px-3
-              py-2
-              text-xs
-              font-medium
-              text-emerald-600
-
-              dark:text-emerald-400
-            "
-          >
-            <CheckCircle2 size={14} />
+          <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+            <CheckCircle2 size={12} />
             Solved
           </div>
+          <div className="flex items-center gap-1 text-[11px] text-neutral-400">
+            <Clock3 size={12} />
+            8m 42s
+          </div>
         </div>
-      </div>
-
-      {/* Meta */}
-
-      <div
-        className="
-          flex
-          items-center
-          gap-6
-          border-b
-          border-neutral-200
-          px-6
-          py-4
-          text-sm
-
-          dark:border-white/10
-        "
-      >
-        <div className="flex items-center gap-2 text-neutral-500 dark:text-neutral-400">
-          <Clock3 size={16} />
-          Today
-        </div>
-
-        <span className="text-neutral-300 dark:text-neutral-700">•</span>
-
-        <span className="text-neutral-500 dark:text-neutral-400">
-          8m 42s
-        </span>
       </div>
 
       {/* Code */}
-
-      <div
-        className="
-          space-y-1
-          p-6
-          font-mono
-          text-[14px]
-          leading-8
-        "
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        className="space-y-0.5 p-4 font-mono text-[12.5px] leading-[22px]"
       >
-        {solution.map((line, index) => (
+        {solution.map((l) => (
           <motion.div
-            key={line.id}
-            initial={{
-              opacity: 0,
-              y: 8,
-            }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-            }}
-            viewport={{
-              once: true,
-            }}
-            transition={{
-              delay: index * 0.08,
-            }}
+            key={l.id}
+            variants={line}
             className={`
-              flex
-              rounded-xl
-              px-3
-              transition-all
-
+              flex rounded-lg px-2 transition-colors
               ${
-                line.highlight
+                l.highlight
                   ? "bg-orange-500/10"
                   : "hover:bg-neutral-100 dark:hover:bg-white/5"
               }
             `}
           >
-            <span
-              className="
-                mr-5
-                w-6
-                text-right
-                select-none
-                text-neutral-400
-                dark:text-neutral-600
-              "
-            >
-              {line.id}
+            <span className="mr-4 w-4 shrink-0 select-none text-right text-neutral-400 dark:text-neutral-600">
+              {l.id}
             </span>
-
             <span
-              className={`
-                whitespace-pre
-
-                ${
-                  line.highlight
-                    ? "text-orange-600 dark:text-orange-400"
-                    : "text-neutral-700 dark:text-neutral-300"
-                }
-              `}
+              className={`whitespace-pre ${
+                l.highlight
+                  ? "text-orange-600 dark:text-orange-400"
+                  : "text-neutral-700 dark:text-neutral-300"
+              }`}
             >
-              {line.text || " "}
+              {l.text || " "}
             </span>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

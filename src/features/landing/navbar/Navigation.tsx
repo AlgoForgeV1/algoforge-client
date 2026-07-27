@@ -1,18 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { navLinks } from "./nav-links";
 
 export default function Navigation() {
   return (
     <div className="hidden items-center gap-10 lg:flex">
       {navLinks.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className="group relative"
-        >
+        <Link key={item.href} href={item.href} className="group relative">
           <span
             className="
             text-[15px]
@@ -28,8 +23,7 @@ export default function Navigation() {
             {item.title}
           </span>
 
-          <motion.span
-            layoutId="navbar-underline"
+          <span
             className="
             absolute
             -bottom-2
@@ -40,6 +34,7 @@ export default function Navigation() {
             bg-orange-500
             transition-all
             duration-300
+            ease-out
             group-hover:w-full
             "
           />
