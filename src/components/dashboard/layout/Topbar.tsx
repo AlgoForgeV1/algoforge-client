@@ -117,7 +117,7 @@ export default function Topbar() {
             dark:hover:bg-white/10
           "
         >
-          {mounted && (theme === "dark" ? <Moon size={18} /> : <Sun size={18} />)}
+          {mounted && (theme === "dark" ? <Sun size={18} /> : <Moon size={18} /> )}
         </button>
       </div>
     </header>

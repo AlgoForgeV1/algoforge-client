@@ -26,7 +26,7 @@ const insights = [
 
 export default function RightPanel() {
   return (
-    <aside className="sticky top-0 flex h-screen flex-col border-l border-black/5 dark:border-white/5 bg-white/100 dark:bg-[#09090B]/80 backdrop-blur-xl">
+    <aside className="flex h-full flex-col border-l border-black/5 dark:border-white/5 bg-white dark:bg-[#09090B]/80 backdrop-blur-xl">
 
       {/* Main */}
       <div className="flex flex-1 flex-col justify-between p-3">

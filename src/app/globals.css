@@ -138,3 +138,14 @@ kbd {
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide scrollbar but keep scrolling */
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none; /* Firefox */
+}
