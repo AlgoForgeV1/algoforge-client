@@ -3,6 +3,8 @@ import { Navbar } from "../features/landing/navbar";
 import { Hero } from "../features/landing/hero";
 import { FeaturesSection } from "../features/landing/features";
 import { ShowcaseSection } from "../features/landing/showcase";
+import { ExtensionSection } from "../features/landing/extension";
+import { PricingSection } from "../features/landing/pricing";
 
 export default function Home() {
   return (
@@ -16,6 +18,10 @@ export default function Home() {
         <FeaturesSection />
 
         <ShowcaseSection />
+
+        <ExtensionSection />
+
+        <PricingSection />
       </main>
     </>
   );

@@ -6,12 +6,17 @@ import { motion, easeInOut } from "framer-motion";
 import Shadow from "./parts/Shadow";
 import Defs from "./parts/Defs";
 
-const SvgForgey = (
-  props: SVGProps<SVGSVGElement> & {
+
+interface Props extends SVGProps<SVGSVGElement> {
     activeFeature?: number | null;
-  }
-) => {
-  const { activeFeature = null, ...svgProps } = props;
+    wave?: boolean;
+}
+
+const SvgForgey = ({
+  activeFeature = null,
+  wave = false,
+  ...svgProps
+}: Props) => {
 
   const pose = {
     eyeX: 0,
@@ -577,15 +582,37 @@ transition={{
 </motion.g>
 {/* ====================== RIGHT HAND ====================== */}
 
+{/* ====================== RIGHT HAND ====================== */}
+
 <motion.g
   id="layer-right-hand"
-  animate={{
-    y: [0, -1.5, 0],
-  }}
-  transition={{
-    duration: 3,
-    repeat: Infinity,
-    ease: easeInOut,
+  animate={
+    wave
+      ? {
+          rotate: [0, 12, -8, 12, -4, 0],
+          x: [0, 3, -1, 3, 0],
+          y: [0, -4, -2, -4, 0],
+        }
+      : {
+          y: [0, -1.5, 0],
+        }
+  }
+  transition={
+    wave
+      ? {
+          duration: 1.2,
+          repeat: Infinity,
+          repeatDelay: 5,
+          ease: easeInOut,
+        }
+      : {
+          duration: 3,
+          repeat: Infinity,
+          ease: easeInOut,
+        }
+  }
+  style={{
+    transformOrigin: "575px 500px",
   }}
 >
   <path
@@ -609,7 +636,6 @@ transition={{
     transform="rotate(25 605 505)"
   />
 </motion.g>
-
 
   </svg>
   );
