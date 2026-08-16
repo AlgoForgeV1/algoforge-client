@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import StepName from "./StepName";
@@ -8,9 +8,46 @@ import StepExperience from "./StepExperience";
 import StepLanguages from "./StepLanguages";
 import StepAvatar from "./StepAvatar";
 import ProgressBar from "./PorgressBar";
+import { getProgrammingLanguages } from "@/src/lib/api/auth";
+
+import { AvatarStyle } from "../avatar/AvatarStyles";
+
+interface ProgrammingLanguage {
+  id: string;
+  name: string;
+}
+
+interface OnboardingData {
+  name: string;
+  username: string;
+  experience: string;
+  language: string;
+  avatarStyle: AvatarStyle;
+  avatarSeed: string;
+}
 
 export default function Onboarding() {
+
+  const [languages, setLanguages] = useState<
+  ProgrammingLanguage[]
+>([]);
+
+const [languageLoading, setLanguageLoading] =
+  useState(true);
+
+const [languageError, setLanguageError] =
+  useState("");
   const [step, setStep] = useState(0);
+
+  const [onboarding, setOnboarding] =
+    useState<OnboardingData>({
+      name: "",
+      username: "",
+      experience: "",
+      language: "",
+      avatarStyle: "initials",
+      avatarSeed: "",
+    });
 
   const totalSteps = 4;
 
@@ -26,10 +63,31 @@ export default function Onboarding() {
     }
   };
 
+  useEffect(() => {
+  async function loadLanguages() {
+    try {
+      setLanguageLoading(true);
+      setLanguageError("");
+
+      const data = await getProgrammingLanguages();
+
+      setLanguages(data);
+    } catch (error) {
+      setLanguageError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load programming languages.",
+      );
+    } finally {
+      setLanguageLoading(false);
+    }
+  }
+
+  loadLanguages();
+}, []);
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-white dark:bg-zinc-950">
-      {/* Background */}
-
       <div className="absolute inset-0 -z-10">
         <div className="absolute -left-40 -top-40 h-[420px] w-[420px] rounded-full bg-orange-500/10 blur-3xl" />
 
@@ -40,49 +98,98 @@ export default function Onboarding() {
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl items-center justify-center px-6 py-10">
         <div className="w-full max-w-3xl">
-          <ProgressBar current={step + 1} total={totalSteps} />
+          <ProgressBar
+            current={step + 1}
+            total={totalSteps}
+          />
 
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
-              initial={{ opacity: 0, y: 20, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.98 }}
+              initial={{
+                opacity: 0,
+                y: 20,
+                scale: 0.98,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                y: -20,
+                scale: 0.98,
+              }}
               transition={{
                 duration: 0.35,
                 ease: "easeOut",
               }}
               className="
-                mt-8
-                rounded-3xl
-                border
-                border-zinc-200
-                bg-white/90
-                p-8
-                shadow-2xl
+                mt-8 rounded-3xl border border-zinc-200
+                bg-white/90 p-8 shadow-2xl
                 backdrop-blur-xl
                 dark:border-zinc-800
                 dark:bg-zinc-900/80
               "
             >
-              {step === 0 && <StepName next={next} />}
+              {step === 0 && (
+                <StepName
+                  next={next}
+                  name={onboarding.name}
+                  username={onboarding.username}
+                  onNameChange={(name) =>
+                    setOnboarding((prev) => ({
+                      ...prev,
+                      name,
+                      avatarSeed:
+                        prev.avatarSeed || name,
+                    }))
+                  }
+                  onUsernameChange={(username) =>
+                    setOnboarding((prev) => ({
+                      ...prev,
+                      username,
+                    }))
+                  }
+                />
+              )}
 
               {step === 1 && (
                 <StepExperience
                   next={next}
                   previous={previous}
+                  value={onboarding.experience}
+                  onChange={(experience) =>
+                    setOnboarding((prev) => ({
+                      ...prev,
+                      experience,
+                    }))
+                  }
                 />
               )}
 
               {step === 2 && (
-                <StepLanguages
-                  next={next}
-                  previous={previous}
-                />
-              )}
+  <StepLanguages
+    next={next}
+    previous={previous}
+    value={onboarding.language}
+    onChange={(language) =>
+      setOnboarding((prev) => ({
+        ...prev,
+        language,
+      }))
+    }
+    languages={languages}
+  />
+)}
 
               {step === 3 && (
-                <StepAvatar previous={previous} />
+                <StepAvatar
+                  previous={previous}
+                  onboarding={onboarding}
+                  setOnboarding={setOnboarding}
+                />
               )}
             </motion.div>
           </AnimatePresence>

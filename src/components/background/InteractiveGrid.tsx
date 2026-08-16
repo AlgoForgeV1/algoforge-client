@@ -2,109 +2,46 @@
 
 import { useEffect, useRef } from "react";
 
-export default function InteractiveGrid() {
-  const gridRef = useRef<HTMLDivElement>(null);
+/**
+ * Subtle dot-grid that brightens near the cursor, warm orange on white.
+ * Mirrors the "aside" reference's soft interactive backdrop.
+ */
+export function InteractiveGrid() {
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
+    const el = containerRef.current;
+    if (!el) return;
 
-    let frame = 0;
-
-    const move = (e: MouseEvent) => {
-      cancelAnimationFrame(frame);
-
-      frame = requestAnimationFrame(() => {
-        const x = e.clientX;
-        const y = e.clientY;
-
-        grid.style.setProperty("--mx", `${x}px`);
-        grid.style.setProperty("--my", `${y}px`);
-      });
+    const handleMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      el.style.setProperty("--mx", `${x}px`);
+      el.style.setProperty("--my", `${y}px`);
     };
 
-    window.addEventListener("mousemove", move);
-
-    return () => {
-      window.removeEventListener("mousemove", move);
-      cancelAnimationFrame(frame);
-    };
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
   }, []);
 
   return (
-    <>
-      {/* Dark */}
-      <div
-        ref={gridRef}
-        className="pointer-events-none absolute inset-0 hidden dark:block overflow-hidden"
-      >
-        <div
-          className="absolute inset-0 transition-transform duration-200"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px)
-            `,
-            backgroundSize: "44px 44px",
-
-            maskImage:
-              "radial-gradient(circle 180px at var(--mx) var(--my), black 0%, transparent 100%)",
-
-            WebkitMaskImage:
-              "radial-gradient(circle 180px at var(--mx) var(--my), black 0%, transparent 100%)",
-
-            transform:
-              "perspective(800px) rotateX(60deg) translateY(-8px)",
-          }}
-        />
-
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px)
-            `,
-            backgroundSize: "44px 44px",
-            opacity: 0.25,
-          }}
-        />
-      </div>
-
-      {/* Light */}
-      <div className="pointer-events-none absolute inset-0 dark:hidden overflow-hidden">
-        <div
-          className="absolute inset-0 transition-transform duration-200"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(0,0,0,.08) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0,0,0,.08) 1px, transparent 1px)
-            `,
-            backgroundSize: "44px 44px",
-
-            maskImage:
-              "radial-gradient(circle 180px at var(--mx) var(--my), black 0%, transparent 100%)",
-
-            WebkitMaskImage:
-              "radial-gradient(circle 180px at var(--mx) var(--my), black 0%, transparent 100%)",
-
-            transform:
-              "perspective(800px) rotateX(60deg) translateY(-8px)",
-          }}
-        />
-
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(0,0,0,.08) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0,0,0,.08) 1px, transparent 1px)
-            `,
-            backgroundSize: "44px 44px",
-            opacity: 0.25,
-          }}
-        />
-      </div>
-    </>
+    <div
+      ref={containerRef}
+      className="absolute inset-0"
+      style={
+        {
+          "--mx": "50%",
+          "--my": "30%",
+          backgroundImage:
+            "radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+          maskImage:
+            "radial-gradient(600px circle at var(--mx) var(--my), black 0%, transparent 70%), linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+          maskComposite: "intersect",
+          WebkitMaskComposite: "source-in",
+        } as React.CSSProperties
+      }
+    />
   );
 }

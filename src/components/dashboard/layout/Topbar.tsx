@@ -7,8 +7,10 @@ import {
   Flame,
   Moon,
   Search,
+  Settings,
   Sun,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function Topbar() {
   const { theme, setTheme } = useTheme();
@@ -17,7 +19,7 @@ export default function Topbar() {
   useEffect(() => setMounted(true), []);
 
   return (
-    <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-black/5 dark:border-white/5 bg-white/90 dark:bg-[#09090B]/80 px-8 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-black/5 bg-white/90 px-8 backdrop-blur-xl dark:border-white/5 dark:bg-[#09090B]/80">
       {/* Search */}
       <div className="relative w-full max-w-lg">
         <Search
@@ -33,25 +35,25 @@ export default function Topbar() {
             rounded-2xl
             border
             border-black/5
-            dark:border-white/5
             bg-black/5
-            dark:bg-white/5
             pl-11
             pr-20
             text-sm
             text-zinc-900
-            dark:text-white
             outline-none
             transition-all
             duration-300
             placeholder:text-zinc-500
             focus:border-orange-500/40
             focus:bg-black/[0.07]
+            dark:border-white/5
+            dark:bg-white/5
+            dark:text-white
             dark:focus:bg-white/[0.07]
           "
         />
 
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 px-2 py-1 text-xs text-zinc-500">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg border border-black/10 bg-black/5 px-2 py-1 text-xs text-zinc-500 dark:border-white/10 dark:bg-white/5">
           Ctrl K
         </div>
       </div>
@@ -72,6 +74,7 @@ export default function Topbar() {
 
         {/* Notifications */}
         <button
+          aria-label="Notifications"
           className="
             flex
             h-11
@@ -81,22 +84,53 @@ export default function Topbar() {
             rounded-2xl
             border
             border-black/5
-            dark:border-white/5
             bg-black/5
-            dark:bg-white/5
             text-zinc-900
-            dark:text-white
             transition
             hover:bg-black/10
+            dark:border-white/5
+            dark:bg-white/5
+            dark:text-white
             dark:hover:bg-white/10
           "
         >
           <Bell size={19} />
         </button>
 
+        {/* Settings */}
+        <Link
+          href="/settings"
+          aria-label="Settings"
+          className="
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-2xl
+            border
+            border-black/5
+            bg-black/5
+            text-zinc-900
+            transition
+            hover:border-orange-500/30
+            hover:bg-orange-500/10
+            hover:text-orange-500
+            dark:border-white/5
+            dark:bg-white/5
+            dark:text-white
+            dark:hover:bg-orange-500/10
+            dark:hover:text-orange-400
+          "
+        >
+          <Settings size={19} />
+        </Link>
+
         {/* Theme */}
         <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          onClick={() =>
+            setTheme(theme === "dark" ? "light" : "dark")
+          }
           aria-label="Toggle theme"
           className="
             flex
@@ -107,17 +141,22 @@ export default function Topbar() {
             rounded-2xl
             border
             border-black/5
-            dark:border-white/5
             bg-black/5
-            dark:bg-white/5
             text-zinc-900
-            dark:text-white
             transition
             hover:bg-black/10
+            dark:border-white/5
+            dark:bg-white/5
+            dark:text-white
             dark:hover:bg-white/10
           "
         >
-          {mounted && (theme === "dark" ? <Sun size={18} /> : <Moon size={18} /> )}
+          {mounted &&
+            (theme === "dark" ? (
+              <Sun size={18} />
+            ) : (
+              <Moon size={18} />
+            ))}
         </button>
       </div>
     </header>
