@@ -1,21 +1,25 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
 import { motion } from "framer-motion";
 
 interface StepNameProps {
   next: () => void;
+  name: string;
+  username: string;
+  onNameChange: (value: string) => void;
+  onUsernameChange: (value: string) => void;
 }
 
-export default function StepName({ next }: StepNameProps) {
-  const [name, setName] = useState("");
-
+export default function StepName({
+  next,
+  name,
+  username,
+  onNameChange,
+  onUsernameChange,
+}: StepNameProps) {
   const handleContinue = () => {
-    if (!name.trim()) return;
-
-    // TODO:
-    // Save to Context / Zustand later
+    if (!name.trim() || !username.trim()) return;
 
     next();
   };
@@ -32,12 +36,12 @@ export default function StepName({ next }: StepNameProps) {
         </p>
 
         <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
-          What's your name?
+          Let's build your profile
         </h1>
 
         <p className="mt-3 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
-          We'll use it across your dashboard, AI reports and personalized
-          recommendations.
+          Tell us a little about yourself to personalize your AlgoForge
+          experience.
         </p>
       </motion.div>
 
@@ -45,62 +49,61 @@ export default function StepName({ next }: StepNameProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.15 }}
-        className="mt-8"
+        className="mt-8 space-y-4"
       >
         <input
           autoFocus
           type="text"
           placeholder="Enter your full name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => onNameChange(e.target.value)}
           className="
-            h-12
-            w-full
-            rounded-xl
-            border
-            border-zinc-200
-            bg-white
-            px-4
-            text-sm
-            text-zinc-900
-            placeholder:text-zinc-400
-            outline-none
-            transition-all
-            duration-200
-            focus:border-[#FF9324]
-            focus:ring-4
-            focus:ring-orange-500/10
-            dark:border-zinc-700
-            dark:bg-zinc-900
+            h-12 w-full rounded-xl border border-zinc-200
+            bg-white px-4 text-sm text-zinc-900
+            placeholder:text-zinc-400 outline-none
+            transition-all focus:border-[#FF9324]
+            focus:ring-4 focus:ring-orange-500/10
+            dark:border-zinc-700 dark:bg-zinc-900
             dark:text-white
-            dark:placeholder:text-zinc-500
           "
         />
+
+        <input
+          type="text"
+          placeholder="Choose a username"
+          value={username}
+          onChange={(e) =>
+            onUsernameChange(
+              e.target.value.replace(/[^a-zA-Z0-9_]/g, ""),
+            )
+          }
+          className="
+            h-12 w-full rounded-xl border border-zinc-200
+            bg-white px-4 text-sm text-zinc-900
+            placeholder:text-zinc-400 outline-none
+            transition-all focus:border-[#FF9324]
+            focus:ring-4 focus:ring-orange-500/10
+            dark:border-zinc-700 dark:bg-zinc-900
+            dark:text-white
+          "
+        />
+
+        <p className="text-xs text-zinc-400">
+          Username can contain letters, numbers and underscores.
+        </p>
       </motion.div>
 
       <div className="mt-8 flex justify-end">
         <button
-          disabled={!name.trim()}
+          disabled={!name.trim() || !username.trim()}
           onClick={handleContinue}
           className="
-            flex
-            h-11
-            items-center
-            gap-2
-            rounded-xl
-            bg-[#FF9324]
-            px-6
-            text-sm
-            font-semibold
-            text-white
-            transition-all
-            duration-200
-            hover:bg-[#ff9d32]
-            hover:shadow-lg
-            hover:shadow-orange-500/20
+            flex h-11 items-center gap-2 rounded-xl
+            bg-[#FF9324] px-6 text-sm font-semibold
+            text-white transition-all hover:bg-[#ff9d32]
+            hover:shadow-lg hover:shadow-orange-500/20
             active:scale-[0.98]
-            disabled:cursor-not-allowed
-            disabled:opacity-40
+            disabled:cursor-not-allowed disabled:opacity-40
           "
         >
           Continue

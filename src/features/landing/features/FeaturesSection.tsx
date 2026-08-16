@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 
 import { Forgey } from "@/src/components/mascot";
@@ -11,54 +11,15 @@ import { FEATURES } from "./features";
 export default function FeaturesSection() {
   const [activeFeature, setActiveFeature] = useState<number | null>(null);
 
-  const orbitCards = useMemo(
-    () => [
-      {
-        feature: FEATURES[0],
-        className:
-          "left-1/2 top-10 -translate-x-1/2 rotate-2",
-      },
-      {
-        feature: FEATURES[1],
-        className:
-          "left-16 top-36 -rotate-6 xl:left-20",
-      },
-      {
-        feature: FEATURES[2],
-        className:
-          "right-16 top-36 rotate-6 xl:right-20",
-      },
-      {
-        feature: FEATURES[3],
-        className:
-          "left-16 bottom-36 rotate-6 xl:left-20",
-      },
-      {
-        feature: FEATURES[4],
-        className:
-          "right-16 bottom-36 -rotate-6 xl:right-20",
-      },
-      {
-        feature: FEATURES[5],
-        className:
-          "bottom-10 left-1/2 -translate-x-1/2 -rotate-2",
-      },
-    ],
-    []
-  );
-
   return (
     <section
       id="features"
       className="
         relative
-        flex
-        min-h-screen
-        items-center
-        justify-center
         overflow-hidden
         px-6
-        py-16
+        py-24
+        sm:py-28
       "
     >
       {/* Background Glow */}
@@ -68,11 +29,11 @@ export default function FeaturesSection() {
           className="
             absolute
             left-1/2
-            top-1/2
-            h-[650px]
-            w-[650px]
+            top-0
+            h-[500px]
+            w-[500px]
             -translate-x-1/2
-            -translate-y-1/2
+            -translate-y-1/3
             rounded-full
             bg-orange-500/10
             blur-[140px]
@@ -81,86 +42,109 @@ export default function FeaturesSection() {
         />
       </div>
 
-      <div className="relative mx-auto h-[760px] w-full max-w-[1400px]">
-        {/* Center */}
+      <div className="relative mx-auto flex max-w-5xl flex-col items-center">
+        {/* Header */}
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <motion.div
-            animate={{
-              y: [0, -8, 0],
-            }}
-            transition={{
-              duration: 5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="relative flex flex-col items-center"
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex flex-col items-center text-center"
+        >
+          <span
+            className="
+              rounded-full
+              border
+              border-orange-300
+              bg-orange-50
+              px-4
+              py-1.5
+              text-[11px]
+              font-semibold
+              uppercase
+              tracking-[0.25em]
+              text-orange-600
+              dark:border-orange-500/30
+              dark:bg-orange-500/10
+              dark:text-orange-400
+            "
           >
-            {/* Badge */}
+            FEATURES
+          </span>
 
-            <motion.div
-              initial={{ opacity: 0, y: -12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="absolute -top-36"
-            >
-              <span
-                className="
-                  rounded-full
-                  border
-                  border-orange-300
-                  bg-orange-50
-                  px-4
-                  py-1.5
-                  text-[11px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.25em]
-                  text-orange-600
-                  dark:border-orange-500/30
-                  dark:bg-orange-500/10
-                  dark:text-orange-400
-                "
-              >
-                FEATURES
-              </span>
-            </motion.div>
-
-            {/* Platform */}
-
+          <div className="relative mt-6 h-40 w-40 sm:h-48 sm:w-48">
             <div
               className="
                 absolute
-                bottom-5
-                h-10
-                w-56
+                inset-0
+                -z-10
                 rounded-full
-                bg-orange-500/20
+                bg-orange-500/15
                 blur-2xl
-                dark:bg-orange-500/25
+                dark:bg-orange-500/20
               "
             />
-
             <Forgey activeFeature={activeFeature} />
-          </motion.div>
-        </div>
-
-        {/* Orbit Cards */}
-
-        {orbitCards.map(({ feature, className }) => (
-          <div
-            key={feature.id}
-            className={`absolute ${className}`}
-          >
-            <FeatureCard
-              feature={feature}
-              active={activeFeature === feature.id}
-              onHover={() => setActiveFeature(feature.id)}
-              onLeave={() => setActiveFeature(null)}
-            />
           </div>
-        ))}
+
+          <h2
+            className="
+              mt-6
+              text-2xl
+              font-semibold
+              tracking-tight
+              text-zinc-900
+              sm:text-3xl
+              dark:text-white
+            "
+          >
+            Everything you need to prep smarter
+          </h2>
+
+          <p
+            className="
+              mt-2
+              max-w-md
+              text-sm
+              leading-6
+              text-zinc-600
+              dark:text-zinc-400
+            "
+          >
+            Forgey studies how you solve problems, not just whether you did.
+          </p>
+        </motion.div>
+
+        {/* Feature Grid */}
+
+        <div
+          className="
+            mt-14
+            grid
+            w-full
+            grid-cols-1
+            gap-4
+            sm:grid-cols-2
+            lg:grid-cols-3
+          "
+        >
+          {FEATURES.map((feature, index) => (
+            <motion.div
+              key={feature.id}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <FeatureCard
+                feature={feature}
+                active={activeFeature === feature.id}
+                onHover={() => setActiveFeature(feature.id)}
+                onLeave={() => setActiveFeature(null)}
+              />
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );

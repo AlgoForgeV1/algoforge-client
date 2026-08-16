@@ -18,9 +18,33 @@ const SvgForgey = ({
   ...svgProps
 }: Props) => {
 
+  const svgRef = React.useRef<SVGSVGElement>(null);
+  const [cursorOffset, setCursorOffset] = React.useState({ x: 0, y: 0 });
+
+  React.useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!svgRef.current) return;
+      const rect = svgRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
+      const angle = Math.atan2(dy, dx);
+      const maxX = 8;
+      const maxY = 6;
+      setCursorOffset({
+        x: Math.cos(angle) * maxX,
+        y: Math.sin(angle) * maxY,
+      });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   const pose = {
-    eyeX: 0,
-    eyeY: 0,
+    eyeX: cursorOffset.x,
+    eyeY: cursorOffset.y,
     hammerRotate: 0,
     hammerY: 0,
   };
@@ -71,6 +95,7 @@ const SvgForgey = ({
 
   return (
     <svg
+      ref={svgRef}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 800 800"
       width="100%"
@@ -471,34 +496,8 @@ transition={{
 
 {/* ====================== HAMMER ====================== */}
 
-<motion.g
+<g
   id="layer-hammer"
-  animate={{
-  rotate:
-    activeFeature === null
-      ? [-2, 2, -2]
-      : [
-          0,
-          pose.hammerRotate - 15,
-          pose.hammerRotate + 30,
-          pose.hammerRotate,
-        ],
-
-  y:
-    activeFeature === null
-      ? [0, -2, 0]
-      : [
-          0,
-          pose.hammerY - 18,
-          pose.hammerY + 6,
-          pose.hammerY,
-        ],
-}}
-  transition={{
-  duration: activeFeature === null ? 3 : 0.55,
-  repeat: activeFeature === null ? Infinity : 0,
-  ease: easeInOut,
-}}
   style={{
     transformOrigin: "610px 520px",
   }}
@@ -548,40 +547,7 @@ transition={{
     opacity={0.45}
     transform="rotate(25 604 435)"
   />
-
-  <motion.circle
-  cx={585}
-  cy={345}
-  r={8}
-  fill="none"
-  stroke="#FB923C"
-  strokeWidth={5}
-  opacity={0}
-  animate={{
-    opacity:
-      activeFeature === null
-        ? 0
-        : [0, 0, 1, 0],
-
-    r:
-      activeFeature === null
-        ? 8
-        : [8, 8, 42, 55],
-
-    strokeWidth:
-      activeFeature === null
-        ? 5
-        : [5, 5, 2, 0],
-  }}
-  transition={{
-    duration: 0.55,
-    times: [0, 0.55, 0.75, 1],
-    ease: easeInOut,
-  }}
-/>
-</motion.g>
-{/* ====================== RIGHT HAND ====================== */}
-
+</g>
 {/* ====================== RIGHT HAND ====================== */}
 
 <motion.g

@@ -6,14 +6,79 @@ import { Eye, EyeOff } from "lucide-react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { useState } from "react";
 
+import {
+  login,
+  register,
+  getGoogleAuthUrl,
+  getGitHubAuthUrl,
+} from "@/src/lib/api/auth";
+
+import { getProfile } from "@/src/lib/api/profile";
+
 interface Props {
   mode: "login" | "signup";
 }
 
 export default function AuthFormPanel({ mode }: Props) {
   const isLogin = mode === "login";
-  const [showPassword, setShowPassword] = useState(false);
+
   const router = useRouter();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        // Backend authenticates the user and sets
+        // HttpOnly access + refresh cookies.
+        const result = await login(email, password);
+
+        console.log("Login successful:", result);
+
+        // Tokens are stored in HttpOnly cookies.
+        // The frontend does not read or store them.
+
+        // Fetch the user's profile to determine
+        // whether onboarding has been completed.
+        const profile = await getProfile();
+
+        console.log("Profile:", profile);
+
+        if (profile.user.onboardingCompleted) {
+          router.push("/dashboard");
+        } else {
+          router.push("/onboarding");
+        }
+      } else {
+        await register(email, password);
+
+        setSuccess(
+          "Account created! Please verify your email before signing in.",
+        );
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="w-full max-w-[390px]">
@@ -34,6 +99,9 @@ export default function AuthFormPanel({ mode }: Props) {
       <div className="mt-6 grid grid-cols-2 gap-3">
         <button
           type="button"
+          onClick={() => {
+            window.location.href = getGoogleAuthUrl();
+          }}
           className="
             flex
             h-11
@@ -59,6 +127,9 @@ export default function AuthFormPanel({ mode }: Props) {
 
         <button
           type="button"
+          onClick={() => {
+            window.location.href = getGitHubAuthUrl();
+          }}
           className="
             flex
             h-11
@@ -97,10 +168,34 @@ export default function AuthFormPanel({ mode }: Props) {
 
       {/* Form */}
 
-      <div className="space-y-3">
-        {!isLogin && (
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-3">
+          {!isLogin && (
+            <input
+              placeholder="Full Name"
+              className="
+                h-11
+                w-full
+                rounded-xl
+                border
+                border-zinc-200
+                px-4
+                text-sm
+                outline-none
+                transition
+                focus:border-[#FF9324]
+                dark:border-zinc-700
+                dark:bg-zinc-900
+              "
+            />
+          )}
+
           <input
-            placeholder="Full Name"
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
             className="
               h-11
               w-full
@@ -116,106 +211,112 @@ export default function AuthFormPanel({ mode }: Props) {
               dark:bg-zinc-900
             "
           />
+
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="
+                h-11
+                w-full
+                rounded-xl
+                border
+                border-zinc-200
+                px-4
+                pr-11
+                text-sm
+                outline-none
+                transition
+                focus:border-[#FF9324]
+                dark:border-zinc-700
+                dark:bg-zinc-900
+              "
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="
+                absolute
+                right-3
+                top-1/2
+                -translate-y-1/2
+                text-zinc-400
+                transition-colors
+                hover:text-[#FF9324]
+              "
+            >
+              {showPassword ? (
+                <EyeOff size={18} />
+              ) : (
+                <Eye size={18} />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Forgot */}
+
+        {isLogin && (
+          <div className="mt-3 flex justify-end">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-zinc-500 hover:text-[#FF9324]"
+            >
+              Forgot Password?
+            </Link>
+          </div>
         )}
 
-        <input
-          type="email"
-          placeholder="Email Address"
+        {/* Error */}
+
+        {error && (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400">
+            {error}
+          </div>
+        )}
+
+        {/* Success */}
+
+        {success && (
+          <div className="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-600 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-400">
+            {success}
+          </div>
+        )}
+
+        {/* Button */}
+
+        <button
+          type="submit"
+          disabled={loading}
           className="
+            mt-5
             h-11
             w-full
             rounded-xl
-            border
-            border-zinc-200
-            px-4
+            bg-[#FF9324]
             text-sm
-            outline-none
-            transition
-            focus:border-[#FF9324]
-            dark:border-zinc-700
-            dark:bg-zinc-900
+            font-semibold
+            text-white
+            transition-all
+            hover:bg-[#ff9d32]
+            active:scale-[0.98]
+            disabled:cursor-not-allowed
+            disabled:opacity-60
           "
-        />
-
-        <div className="relative">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className="
-              h-11
-              w-full
-              rounded-xl
-              border
-              border-zinc-200
-              px-4
-              pr-11
-              text-sm
-              outline-none
-              transition
-              focus:border-[#FF9324]
-              dark:border-zinc-700
-              dark:bg-zinc-900
-            "
-          />
-
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="
-              absolute
-              right-3
-              top-1/2
-              -translate-y-1/2
-              text-zinc-400
-              transition-colors
-              hover:text-[#FF9324]
-            "
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Forgot */}
-
-      {isLogin && (
-        <div className="mt-3 flex justify-end">
-          <Link
-            href="/forgot-password"
-            className="text-sm text-zinc-500 hover:text-[#FF9324]"
-          >
-            Forgot Password?
-          </Link>
-        </div>
-      )}
-
-      {/* Button */}
-
-      <button
-        type="button"
-        onClick={() => {
-          if (isLogin) {
-            console.log("Login will be connected later");
-          } else {
-            router.push("/onboarding");
-          }
-        }}
-        className="
-          mt-5
-          h-11
-          w-full
-          rounded-xl
-          bg-[#FF9324]
-          text-sm
-          font-semibold
-          text-white
-          transition-all
-          hover:bg-[#ff9d32]
-          active:scale-[0.98]
-        "
-      >
-        {isLogin ? "Sign In" : "Continue"}
-      </button>
+        >
+          {loading
+            ? isLogin
+              ? "Signing in..."
+              : "Creating account..."
+            : isLogin
+              ? "Sign In"
+              : "Continue"}
+        </button>
+      </form>
 
       {/* Footer */}
 

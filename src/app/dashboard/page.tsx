@@ -1,6 +1,7 @@
 import Greeting from "@/src/components/dashboard/greeting/Greeting";
 import Heatmap from "@/src/components/dashboard/heatmap/Heatmap";
 import Suggestions from "@/src/components/dashboard/suggestions/Suggestions";
+import RecentActivity from "@/src/components/dashboard/recent/RecentActivity";
 
 export default function DashboardPage() {
   return (
@@ -10,6 +11,8 @@ export default function DashboardPage() {
       <Heatmap />
 
       <Suggestions />
+
+      <RecentActivity />
     </div>
   );
 }
