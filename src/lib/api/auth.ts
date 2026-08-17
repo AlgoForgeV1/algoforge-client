@@ -98,12 +98,14 @@ export async function logout(): Promise<void> {
   }>(response);
 }
 
-export function getGoogleAuthUrl() {
-  return `${API_URL}/api/auth/google`;
+export type OAuthModule = "login" | "signup";
+
+export function getGoogleAuthUrl(mode: OAuthModule) {
+  return `${API_URL}/api/auth/google?mode=${mode}`;
 }
 
-export function getGitHubAuthUrl() {
-  return `${API_URL}/api/auth/github`;
+export function getGitHubAuthUrl(mode: OAuthModule) {
+  return `${API_URL}/api/auth/github?mode=${mode}`;
 }
 
 export interface ProgrammingLanguage {

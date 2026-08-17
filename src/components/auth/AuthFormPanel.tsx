@@ -81,7 +81,7 @@ export default function AuthFormPanel({ mode }: Props) {
   }
 
   return (
-    <div className="w-full max-w-[390px]">
+    <div className="w-full max-w-97.5">
       {/* Heading */}
 
       <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
@@ -100,7 +100,7 @@ export default function AuthFormPanel({ mode }: Props) {
         <button
           type="button"
           onClick={() => {
-            window.location.href = getGoogleAuthUrl();
+            window.location.href = getGoogleAuthUrl(mode);
           }}
           className="
             flex
@@ -128,7 +128,7 @@ export default function AuthFormPanel({ mode }: Props) {
         <button
           type="button"
           onClick={() => {
-            window.location.href = getGitHubAuthUrl();
+            window.location.href = getGitHubAuthUrl(mode);
           }}
           className="
             flex
