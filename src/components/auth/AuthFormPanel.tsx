@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   login,
@@ -23,6 +23,7 @@ export default function AuthFormPanel({ mode }: Props) {
   const isLogin = mode === "login";
 
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -33,6 +34,15 @@ export default function AuthFormPanel({ mode }: Props) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // OAuth error handler
+  useEffect(() => {
+    const oauthError = searchParams.get("error");
+
+    if (oauthError) {
+      setError(oauthError);
+    }
+  }, [searchParams]);
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -42,17 +52,10 @@ export default function AuthFormPanel({ mode }: Props) {
 
     try {
       if (isLogin) {
-        // Backend authenticates the user and sets
-        // HttpOnly access + refresh cookies.
         const result = await login(email, password);
 
         console.log("Login successful:", result);
 
-        // Tokens are stored in HttpOnly cookies.
-        // The frontend does not read or store them.
-
-        // Fetch the user's profile to determine
-        // whether onboarding has been completed.
         const profile = await getProfile();
 
         console.log("Profile:", profile);
@@ -82,8 +85,6 @@ export default function AuthFormPanel({ mode }: Props) {
 
   return (
     <div className="w-full max-w-97.5">
-      {/* Heading */}
-
       <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
         {isLogin ? "Welcome back" : "Create your account"}
       </h1>
@@ -103,22 +104,11 @@ export default function AuthFormPanel({ mode }: Props) {
             window.location.href = getGoogleAuthUrl(mode);
           }}
           className="
-            flex
-            h-11
-            items-center
-            justify-center
-            gap-2
-            rounded-xl
-            border
-            border-zinc-200
-            bg-white
-            text-sm
-            font-medium
-            transition-all
-            hover:border-[#FF9324]
-            hover:bg-orange-50
-            dark:border-zinc-700
-            dark:bg-zinc-900
+            flex h-11 items-center justify-center gap-2
+            rounded-xl border border-zinc-200 bg-white
+            text-sm font-medium transition-all
+            hover:border-[#FF9324] hover:bg-orange-50
+            dark:border-zinc-700 dark:bg-zinc-900
           "
         >
           <FaGoogle className="text-red-500" />
@@ -131,30 +121,17 @@ export default function AuthFormPanel({ mode }: Props) {
             window.location.href = getGitHubAuthUrl(mode);
           }}
           className="
-            flex
-            h-11
-            items-center
-            justify-center
-            gap-2
-            rounded-xl
-            border
-            border-zinc-200
-            bg-white
-            text-sm
-            font-medium
-            transition-all
-            hover:border-[#FF9324]
-            hover:bg-orange-50
-            dark:border-zinc-700
-            dark:bg-zinc-900
+            flex h-11 items-center justify-center gap-2
+            rounded-xl border border-zinc-200 bg-white
+            text-sm font-medium transition-all
+            hover:border-[#FF9324] hover:bg-orange-50
+            dark:border-zinc-700 dark:bg-zinc-900
           "
         >
           <FaGithub />
           GitHub
         </button>
       </div>
-
-      {/* Divider */}
 
       <div className="my-5 flex items-center gap-3">
         <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-700" />
@@ -166,26 +143,16 @@ export default function AuthFormPanel({ mode }: Props) {
         <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-700" />
       </div>
 
-      {/* Form */}
-
       <form onSubmit={handleSubmit}>
         <div className="space-y-3">
           {!isLogin && (
             <input
               placeholder="Full Name"
               className="
-                h-11
-                w-full
-                rounded-xl
-                border
-                border-zinc-200
-                px-4
-                text-sm
-                outline-none
-                transition
+                h-11 w-full rounded-xl border border-zinc-200
+                px-4 text-sm outline-none transition
                 focus:border-[#FF9324]
-                dark:border-zinc-700
-                dark:bg-zinc-900
+                dark:border-zinc-700 dark:bg-zinc-900
               "
             />
           )}
@@ -197,18 +164,10 @@ export default function AuthFormPanel({ mode }: Props) {
             onChange={(e) => setEmail(e.target.value)}
             required
             className="
-              h-11
-              w-full
-              rounded-xl
-              border
-              border-zinc-200
-              px-4
-              text-sm
-              outline-none
-              transition
+              h-11 w-full rounded-xl border border-zinc-200
+              px-4 text-sm outline-none transition
               focus:border-[#FF9324]
-              dark:border-zinc-700
-              dark:bg-zinc-900
+              dark:border-zinc-700 dark:bg-zinc-900
             "
           />
 
@@ -220,19 +179,10 @@ export default function AuthFormPanel({ mode }: Props) {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="
-                h-11
-                w-full
-                rounded-xl
-                border
-                border-zinc-200
-                px-4
-                pr-11
-                text-sm
-                outline-none
-                transition
+                h-11 w-full rounded-xl border border-zinc-200
+                px-4 pr-11 text-sm outline-none transition
                 focus:border-[#FF9324]
-                dark:border-zinc-700
-                dark:bg-zinc-900
+                dark:border-zinc-700 dark:bg-zinc-900
               "
             />
 
@@ -240,25 +190,16 @@ export default function AuthFormPanel({ mode }: Props) {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="
-                absolute
-                right-3
-                top-1/2
+                absolute right-3 top-1/2
                 -translate-y-1/2
                 text-zinc-400
-                transition-colors
                 hover:text-[#FF9324]
               "
             >
-              {showPassword ? (
-                <EyeOff size={18} />
-              ) : (
-                <Eye size={18} />
-              )}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </div>
-
-        {/* Forgot */}
 
         {isLogin && (
           <div className="mt-3 flex justify-end">
@@ -271,15 +212,11 @@ export default function AuthFormPanel({ mode }: Props) {
           </div>
         )}
 
-        {/* Error */}
-
         {error && (
           <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400">
             {error}
           </div>
         )}
-
-        {/* Success */}
 
         {success && (
           <div className="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-600 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-400">
@@ -287,20 +224,13 @@ export default function AuthFormPanel({ mode }: Props) {
           </div>
         )}
 
-        {/* Button */}
-
         <button
           type="submit"
           disabled={loading}
           className="
-            mt-5
-            h-11
-            w-full
-            rounded-xl
+            mt-5 h-11 w-full rounded-xl
             bg-[#FF9324]
-            text-sm
-            font-semibold
-            text-white
+            text-sm font-semibold text-white
             transition-all
             hover:bg-[#ff9d32]
             active:scale-[0.98]
@@ -317,8 +247,6 @@ export default function AuthFormPanel({ mode }: Props) {
               : "Continue"}
         </button>
       </form>
-
-      {/* Footer */}
 
       <p className="mt-5 text-center text-sm text-zinc-500">
         {isLogin ? (
