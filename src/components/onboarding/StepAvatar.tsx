@@ -44,6 +44,7 @@ export default function StepAvatar({
     }));
   };
 
+
   const finishOnboarding = async () => {
     setError("");
     setLoading(true);
@@ -62,7 +63,10 @@ export default function StepAvatar({
         )}`,
       });
 
-      window.location.href = "/dashboard";
+
+      // Redirect to completion animation
+      window.location.href = "/onboarding/completed";
+
     } catch (err) {
       setError(
         err instanceof Error
@@ -74,11 +78,19 @@ export default function StepAvatar({
     }
   };
 
+
   return (
     <div className="mx-auto w-full max-w-5xl">
+
       <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{
+          opacity: 0,
+          y: 18,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
       >
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-[#FF9324]">
           STEP 4
@@ -93,6 +105,7 @@ export default function StepAvatar({
         </p>
       </motion.div>
 
+
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         {avatarInfo.map((avatar) => (
           <AvatarCard
@@ -101,7 +114,9 @@ export default function StepAvatar({
             title={avatar.title}
             description={avatar.description}
             seed={onboarding.avatarSeed}
-            selected={onboarding.avatarStyle === avatar.id}
+            selected={
+              onboarding.avatarStyle === avatar.id
+            }
             onClick={() =>
               setOnboarding((prev) => ({
                 ...prev,
@@ -112,45 +127,97 @@ export default function StepAvatar({
         ))}
       </div>
 
+
       {error && (
         <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
         </div>
       )}
 
+
       <div className="mt-8 flex items-center justify-between">
+
         <button
           type="button"
           onClick={previous}
           disabled={loading}
-          className="flex h-11 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-5 text-sm font-medium dark:border-zinc-700 dark:bg-zinc-900"
+          className="
+            flex
+            h-11
+            items-center
+            gap-2
+            rounded-xl
+            border
+            border-zinc-200
+            bg-white
+            px-5
+            text-sm
+            font-medium
+            dark:border-zinc-700
+            dark:bg-zinc-900
+          "
         >
           <ArrowLeft size={18} />
           Back
         </button>
 
+
         <div className="flex gap-3">
+
           <button
             type="button"
             onClick={generateNew}
             disabled={loading}
-            className="flex h-11 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-5 text-sm font-medium dark:border-zinc-700 dark:bg-zinc-900"
+            className="
+              flex
+              h-11
+              items-center
+              gap-2
+              rounded-xl
+              border
+              border-zinc-300
+              bg-white
+              px-5
+              text-sm
+              font-medium
+              dark:border-zinc-700
+              dark:bg-zinc-900
+            "
           >
             <RefreshCcw size={16} />
             Generate New
           </button>
 
+
           <button
             type="button"
             onClick={finishOnboarding}
             disabled={loading}
-            className="flex h-11 items-center gap-2 rounded-xl bg-[#FF9324] px-6 text-sm font-semibold text-white disabled:opacity-50"
+            className="
+              flex
+              h-11
+              items-center
+              gap-2
+              rounded-xl
+              bg-[#FF9324]
+              px-6
+              text-sm
+              font-semibold
+              text-white
+              disabled:opacity-50
+            "
           >
-            {loading ? "Building..." : "Build My Profile"}
+            {loading
+              ? "Building..."
+              : "Build My Profile"}
+
             <ArrowRight size={18} />
           </button>
+
         </div>
+
       </div>
+
     </div>
   );
 }
