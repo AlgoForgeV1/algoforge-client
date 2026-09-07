@@ -189,3 +189,50 @@ export async function getProfile(): Promise<ProfileResponse> {
 
   return handleResponse<ProfileResponse>(response);
 }
+
+export async function forgotPassword(
+  email: string,
+): Promise<{ message: string }> {
+  const response = await fetch(
+    `${API_URL}/api/auth/forgot-password`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        email,
+      }),
+    },
+  );
+
+  return handleResponse<{ message: string }>(
+    response,
+  );
+}
+
+export async function resetPassword(
+  token: string,
+  password: string,
+): Promise<{ message: string }> {
+  const response = await fetch(
+    `${API_URL}/api/auth/reset-password`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+  token,
+  password,
+  confirmPassword: password,
+}),
+    },
+  );
+
+  return handleResponse<{ message: string }>(
+    response,
+  );
+}
