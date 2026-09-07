@@ -56,15 +56,13 @@ export default function AuthFormPanel({ mode }: Props) {
 
         console.log("Login successful:", result);
 
-        const profile = await getProfile();
-
-        console.log("Profile:", profile);
-
-        if (profile.user.onboardingCompleted) {
-          router.push("/dashboard");
-        } else {
+        if(!result.user?.onboardingCompleted){
           router.push("/onboarding");
         }
+        else {
+          router.push("/dashboard");
+        }
+
       } else {
         await register(email, password);
 

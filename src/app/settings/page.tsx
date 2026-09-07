@@ -12,21 +12,20 @@ import {
   Pencil,
   Shield,
   UserRound,
+  WalletCards,
   Zap,
   Mail,
   Smartphone,
-  WalletCards,
 } from "lucide-react";
 
 import { getProfile, type ProfileResponse } from "@/src/lib/api/profile";
 import { logout } from "@/src/lib/api/auth";
 
-import { deleteAccount } from "@/src/lib/api/settings";
-
-
 import {
   getSettings,
   updateNotificationPreferences,
+  deleteAccount,
+  changePassword,
   type SettingsResponse,
 } from "@/src/lib/api/settings";
 
@@ -1320,84 +1319,452 @@ function NotificationSection({
 
 function PrivacySection({
   onDeleteClick,
-}:{
-  onDeleteClick:()=>void;
-}){
+}: {
+  onDeleteClick: () => void;
+}) {
+  const [showChangePassword, setShowChangePassword] =
+    useState(false);
+
+  const [currentPassword, setCurrentPassword] =
+    useState("");
+
+  const [newPassword, setNewPassword] =
+    useState("");
+
+  const [confirmPassword, setConfirmPassword] =
+    useState("");
+
+  const [passwordLoading, setPasswordLoading] =
+    useState(false);
+
+  const [passwordError, setPasswordError] =
+    useState("");
+
+  const [passwordSuccess, setPasswordSuccess] =
+    useState("");
+
+  async function handleChangePassword(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    setPasswordError("");
+    setPasswordSuccess("");
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordError("Please fill in all password fields.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError("New passwords do not match.");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setPasswordError(
+        "New password must be at least 8 characters long.",
+      );
+      return;
+    }
+
+    setPasswordLoading(true);
+
+    try {
+      await changePassword({
+        currentPassword,
+        newPassword,
+      });
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+
+      setPasswordSuccess(
+        "Your password has been changed successfully.",
+      );
+
+      setShowChangePassword(false);
+    } catch (error) {
+      setPasswordError(
+        error instanceof Error
+          ? error.message
+          : "Failed to change password.",
+      );
+    } finally {
+      setPasswordLoading(false);
+    }
+  }
 
   return (
-
     <div>
-
       <SectionHeader
-        icon={<Shield size={19}/>}
+        icon={<Shield size={19} />}
         title="Privacy"
-        description="Manage your account security and privacy."
+        description="Manage your security and account privacy."
       />
 
+      <div className="mt-8 space-y-4">
+        {/* Password */}
 
-      <div
-        className="
-        mt-8
-        rounded-2xl
-        border
-        border-red-200
-        bg-red-50
-        p-6
-        dark:border-red-900/40
-        dark:bg-red-950/20
-        "
-      >
-
-        <h3
+        <div
           className="
-          font-semibold
-          text-red-600
+            rounded-2xl
+            border
+            border-zinc-200
+            p-5
+            dark:border-zinc-800
           "
         >
-          Delete Account
-        </h3>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div
+                className="
+                  flex
+                  h-10
+                  w-10
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-zinc-100
+                  text-zinc-600
+                  dark:bg-zinc-800
+                  dark:text-zinc-300
+                "
+              >
+                <Lock size={18} />
+              </div>
 
+              <div>
+                <h3 className="font-semibold text-zinc-900 dark:text-white">
+                  Password
+                </h3>
 
-        <p
+                <p className="mt-1 text-sm text-zinc-500">
+                  Change your account password.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowChangePassword(
+                  (value) => !value,
+                );
+
+                setPasswordError("");
+                setPasswordSuccess("");
+              }}
+              className="
+                shrink-0
+                rounded-xl
+                border
+                border-zinc-200
+                px-4
+                py-2
+                text-sm
+                font-medium
+                text-zinc-700
+                transition
+                hover:border-[#FF9324]
+                hover:text-[#FF9324]
+                dark:border-zinc-700
+                dark:text-zinc-300
+              "
+            >
+              {showChangePassword
+                ? "Cancel"
+                : "Change password"}
+            </button>
+          </div>
+
+          {/* Password form */}
+
+          {showChangePassword && (
+            <form
+              onSubmit={handleChangePassword}
+              className="
+                mt-6
+                border-t
+                border-zinc-100
+                pt-6
+                dark:border-zinc-800
+              "
+            >
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="current-password"
+                    className="
+                      mb-2
+                      block
+                      text-sm
+                      font-medium
+                      text-zinc-700
+                      dark:text-zinc-300
+                    "
+                  >
+                    Current password
+                  </label>
+
+                  <input
+                    id="current-password"
+                    type="password"
+                    value={currentPassword}
+                    onChange={(event) =>
+                      setCurrentPassword(
+                        event.target.value,
+                      )
+                    }
+                    autoComplete="current-password"
+                    className="
+                      h-11
+                      w-full
+                      rounded-xl
+                      border
+                      border-zinc-200
+                      bg-white
+                      px-4
+                      text-sm
+                      outline-none
+                      transition
+                      focus:border-[#FF9324]
+                      dark:border-zinc-700
+                      dark:bg-zinc-900
+                      dark:text-white
+                    "
+                    placeholder="Enter current password"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="new-password"
+                    className="
+                      mb-2
+                      block
+                      text-sm
+                      font-medium
+                      text-zinc-700
+                      dark:text-zinc-300
+                    "
+                  >
+                    New password
+                  </label>
+
+                  <input
+                    id="new-password"
+                    type="password"
+                    value={newPassword}
+                    onChange={(event) =>
+                      setNewPassword(
+                        event.target.value,
+                      )
+                    }
+                    autoComplete="new-password"
+                    className="
+                      h-11
+                      w-full
+                      rounded-xl
+                      border
+                      border-zinc-200
+                      bg-white
+                      px-4
+                      text-sm
+                      outline-none
+                      transition
+                      focus:border-[#FF9324]
+                      dark:border-zinc-700
+                      dark:bg-zinc-900
+                      dark:text-white
+                    "
+                    placeholder="Enter new password"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="confirm-password"
+                    className="
+                      mb-2
+                      block
+                      text-sm
+                      font-medium
+                      text-zinc-700
+                      dark:text-zinc-300
+                    "
+                  >
+                    Confirm new password
+                  </label>
+
+                  <input
+                    id="confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(event) =>
+                      setConfirmPassword(
+                        event.target.value,
+                      )
+                    }
+                    autoComplete="new-password"
+                    className="
+                      h-11
+                      w-full
+                      rounded-xl
+                      border
+                      border-zinc-200
+                      bg-white
+                      px-4
+                      text-sm
+                      outline-none
+                      transition
+                      focus:border-[#FF9324]
+                      dark:border-zinc-700
+                      dark:bg-zinc-900
+                      dark:text-white
+                    "
+                    placeholder="Confirm new password"
+                  />
+                </div>
+              </div>
+
+              {passwordError && (
+                <div
+                  className="
+                    mt-4
+                    rounded-xl
+                    border
+                    border-red-200
+                    bg-red-50
+                    px-4
+                    py-3
+                    text-sm
+                    text-red-600
+                    dark:border-red-900/50
+                    dark:bg-red-950/30
+                    dark:text-red-400
+                  "
+                >
+                  {passwordError}
+                </div>
+              )}
+
+              {passwordSuccess && (
+                <div
+                  className="
+                    mt-4
+                    rounded-xl
+                    border
+                    border-green-200
+                    bg-green-50
+                    px-4
+                    py-3
+                    text-sm
+                    text-green-600
+                    dark:border-green-900/50
+                    dark:bg-green-950/30
+                    dark:text-green-400
+                  "
+                >
+                  {passwordSuccess}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={passwordLoading}
+                className="
+                  mt-5
+                  h-11
+                  rounded-xl
+                  bg-[#FF9324]
+                  px-5
+                  text-sm
+                  font-semibold
+                  text-white
+                  transition
+                  hover:bg-[#ff9d32]
+                  disabled:cursor-not-allowed
+                  disabled:opacity-50
+                "
+              >
+                {passwordLoading
+                  ? "Changing password..."
+                  : "Update password"}
+              </button>
+            </form>
+          )}
+        </div>
+
+        {/* Delete Account */}
+
+        <div
           className="
-          mt-2
-          text-sm
-          text-zinc-500
+            rounded-2xl
+            border
+            border-red-200
+            p-5
+            dark:border-red-900/40
           "
         >
-          Permanently delete your AlgoForge account.
-          This action cannot be undone.
-        </p>
+          <div className="flex items-start gap-4">
+            <div
+              className="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-red-50
+                text-red-500
+                dark:bg-red-950/30
+              "
+            >
+              <Shield size={18} />
+            </div>
 
+            <div className="min-w-0">
+              <h3 className="font-semibold text-zinc-900 dark:text-white">
+                Delete account
+              </h3>
 
-        <button
-  onClick={onDeleteClick}
-          className="
-          mt-5
-          rounded-xl
-          bg-red-500
-          px-5
-          py-2.5
-          text-sm
-          font-semibold
-          text-white
-          transition
-          hover:bg-red-600
-          "
-        >
-          Delete Account
-        </button>
+              <p className="mt-1 text-sm leading-5 text-zinc-500">
+                Permanently delete your AlgoForge account
+                and associated data.
+              </p>
+            </div>
+          </div>
 
-
+          <button
+            type="button"
+            onClick={onDeleteClick}
+            className="
+              mt-5
+              rounded-xl
+              border
+              border-red-200
+              px-4
+              py-2
+              text-sm
+              font-medium
+              text-red-500
+              transition
+              hover:bg-red-50
+              dark:border-red-900/50
+              dark:hover:bg-red-950/30
+            "
+          >
+            Delete account
+          </button>
+        </div>
       </div>
-
-
     </div>
-
   );
-
 }
-
 function DeleteAccountModal({
   onClose,
 }:{
