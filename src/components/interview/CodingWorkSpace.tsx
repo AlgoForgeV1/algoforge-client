@@ -31,7 +31,16 @@ export default function CodingWorkspace({ question, practice }: { question: Codi
       setResult(res);
       if (kind === "submit") setSubmission(question.id, res);
     } catch {
-      setResult({ status: "runtime_error", cases: [], stderr: "Could not reach the execution service. Try again." });
+      setResult({
+  status: "runtime_error",
+  cases: [],
+  passedCount: 0,
+  totalCases: 0,
+  score: 0,
+  maxScore: 0,
+  percentage: 0,
+  stderr: "Could not reach the execution service. Try again.",
+});
     } finally {
       setRunning(null);
     }

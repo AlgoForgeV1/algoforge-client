@@ -1,6 +1,42 @@
 
 import { authenticatedFetch } from "@/src/lib/api/authenticated-fetch";
 
+/* -------------------------------------------------------------------------- */
+/* Common API types                                                           */
+/* -------------------------------------------------------------------------- */
+
+type ApiResponse<T> = {
+  success: boolean;
+  message?: string;
+  data: T;
+};
+
+async function request<T>(
+  endpoint: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const response = await authenticatedFetch(endpoint, {
+    ...options,
+    cache: "no-store",
+  });
+
+  const body = (await response.json().catch(() => ({}))) as Partial<
+    ApiResponse<T>
+  > & { message?: string };
+
+  if (!response.ok || body.success === false) {
+    throw new Error(
+      body.message ?? `Request failed with status ${response.status}`,
+    );
+  }
+
+  return body.data as T;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Import types                                                               */
+/* -------------------------------------------------------------------------- */
+
 export type ImportIssue = {
   index: number;
   title?: string;
@@ -52,12 +88,6 @@ export type ImportHistoryItem = {
   completedAt: string | null;
 };
 
-type ApiResponse<T> = {
-  success: boolean;
-  message?: string;
-  data: T;
-};
-
 export type QuestionImportPayload = {
   companyName?: string;
   sourceName?: string;
@@ -65,27 +95,9 @@ export type QuestionImportPayload = {
   csv?: string;
 };
 
-async function request<T>(
-  endpoint: string,
-  options: RequestInit = {},
-): Promise<T> {
-  const response = await authenticatedFetch(endpoint, {
-    ...options,
-    cache: "no-store",
-  });
-
-  const body = (await response.json().catch(() => ({}))) as Partial<
-    ApiResponse<T>
-  > & { message?: string };
-
-  if (!response.ok || body.success === false) {
-    throw new Error(
-      body.message ?? `Request failed with status ${response.status}`,
-    );
-  }
-
-  return body.data as T;
-}
+/* -------------------------------------------------------------------------- */
+/* Import API                                                                 */
+/* -------------------------------------------------------------------------- */
 
 export function previewQuestionImport(
   payload: QuestionImportPayload,
@@ -108,13 +120,19 @@ export function importQuestions(
 export function getImportHistory(
   limit = 20,
 ): Promise<ImportHistoryItem[]> {
-  const safeLimit = Math.min(Math.max(Math.floor(limit), 1), 100);
+  const safeLimit = Math.min(
+    Math.max(Math.floor(limit), 1),
+    100,
+  );
 
   return request<ImportHistoryItem[]>(
     `/api/mockoa/import/history?limit=${safeLimit}`,
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Company assessments                                                        */
+/* -------------------------------------------------------------------------- */
 
 export type CompanyAssessmentQuestion = {
   id: string;
@@ -151,10 +169,14 @@ export function getCompanyAssessments(
 ): Promise<CompanyAssessmentsResponse> {
   const safeSlug = encodeURIComponent(companySlug.trim());
 
-  return request(
+  return request<CompanyAssessmentsResponse>(
     `/api/mockoa/companies/${safeSlug}/assessments`,
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/* Assessment details                                                         */
+/* -------------------------------------------------------------------------- */
 
 export type AssessmentQuestionContent = {
   title: string;
@@ -194,7 +216,7 @@ export type AssessmentDetails = {
 };
 
 export function getAssessmentDetails(
-  assessmentId: string
+  assessmentId: string,
 ): Promise<AssessmentDetails> {
   const safeId = encodeURIComponent(assessmentId.trim());
 
@@ -202,8 +224,14 @@ export function getAssessmentDetails(
     throw new Error("Assessment ID is required.");
   }
 
-  return request(`/api/mockoa/assessments/${safeId}`);
+  return request<AssessmentDetails>(
+    `/api/mockoa/assessments/${safeId}`,
+  );
 }
+
+/* -------------------------------------------------------------------------- */
+/* Question bank                                                              */
+/* -------------------------------------------------------------------------- */
 
 export type QuestionBankItem = {
   id: string;
@@ -226,6 +254,59 @@ export type QuestionBankResponse = {
   companies: string[];
 };
 
+export async function getQuestionBank(
+  params: {
+    search?: string;
+    companyName?: string;
+    difficulty?: string;
+    page?: number;
+    limit?: number;
+  } = {},
+): Promise<QuestionBankResponse> {
+  const query = new URLSearchParams();
+
+  if (params.search) {
+    query.set("search", params.search);
+  }
+
+  if (params.companyName) {
+    query.set("companyName", params.companyName);
+  }
+
+  if (params.difficulty) {
+    query.set("difficulty", params.difficulty);
+  }
+
+  if (params.page) {
+    query.set("page", String(params.page));
+  }
+
+  if (params.limit) {
+    query.set("limit", String(params.limit));
+  }
+
+  const suffix = query.toString();
+
+  const response = await authenticatedFetch(
+    `/api/mockoa/admin/question-bank${suffix ? `?${suffix}` : ""}`,
+    { cache: "no-store" },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok || result.success !== true) {
+    throw new Error(
+      result.message ?? "Failed to load question bank",
+    );
+  }
+
+  return result.data as QuestionBankResponse;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Assessment creation                                                        */
+/* -------------------------------------------------------------------------- */
+
 export type CreateMockOAAssessmentInput = {
   companyName: string;
   title: string;
@@ -244,65 +325,51 @@ export type MockOAAssessmentDraft = {
   isPublished: boolean;
 };
 
-export async function getQuestionBank(params: {
-  search?: string;
-  companyName?: string;
-  difficulty?: string;
-  page?: number;
-  limit?: number;
-} = {}): Promise<QuestionBankResponse> {
-  const query = new URLSearchParams();
-
-  if (params.search) query.set("search", params.search);
-  if (params.companyName) query.set("companyName", params.companyName);
-  if (params.difficulty) query.set("difficulty", params.difficulty);
-  if (params.page) query.set("page", String(params.page));
-  if (params.limit) query.set("limit", String(params.limit));
-
-  const suffix = query.toString();
+export async function createMockOAAssessment(
+  input: CreateMockOAAssessmentInput,
+): Promise<MockOAAssessmentDraft> {
   const response = await authenticatedFetch(
-    `/api/mockoa/admin/question-bank${suffix ? `?${suffix}` : ""}`,
+    "/api/mockoa/admin/assessments",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(input),
+    },
   );
 
   const result = await response.json();
 
   if (!response.ok || result.success !== true) {
-    throw new Error(result.message ?? "Failed to load question bank");
-  }
-
-  return result.data as QuestionBankResponse;
-}
-
-export async function createMockOAAssessment(
-  input: CreateMockOAAssessmentInput,
-): Promise<MockOAAssessmentDraft> {
-  const response = await authenticatedFetch("/api/mockoa/admin/assessments", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
-  });
-
-  const result = await response.json();
-
-  if (!response.ok || result.success !== true) {
-    throw new Error(result.message ?? "Failed to create assessment");
+    throw new Error(
+      result.message ?? "Failed to create assessment",
+    );
   }
 
   return result.data as MockOAAssessmentDraft;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Publish assessment                                                         */
+/* -------------------------------------------------------------------------- */
 
 export async function publishMockOAAssessment(
   assessmentId: string,
 ): Promise<MockOAAssessmentDraft> {
   const response = await authenticatedFetch(
     `/api/mockoa/admin/assessments/${encodeURIComponent(assessmentId)}/publish`,
-    { method: "POST" },
+    {
+      method: "POST",
+    },
   );
 
   const result = await response.json();
 
   if (!response.ok || result.success !== true) {
-    throw new Error(result.message ?? "Failed to publish assessment");
+    throw new Error(
+      result.message ?? "Failed to publish assessment",
+    );
   }
 
   return result.data as MockOAAssessmentDraft;

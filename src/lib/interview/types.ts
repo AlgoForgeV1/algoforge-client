@@ -75,10 +75,18 @@ export interface CaseResult {
   output: string;
   passed: boolean;
   timeMs: number;
+  hidden?: boolean;
+  points: number;
+  maxPoints: number;
 }
 
 export interface RunResult {
   status: "accepted" | "wrong_answer" | "runtime_error" | "compile_error" | "tle";
   cases: CaseResult[];
+  passedCount: number;
+  totalCases: number;
+  score: number;
+  maxScore: number;
+  percentage: number;
   stderr?: string;
 }
